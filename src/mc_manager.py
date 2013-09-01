@@ -21,13 +21,40 @@ class MinecraftServerManager:
 		self.servers = []
 
 	'''
+	creates a string like '[------         ] 35%' which shows progress
+	'''
+	def getProgressString(self, percent):
+		length = 50
+		out = "["
+		ticks = int(percent/(float(100)/length))
+		for i in range(ticks):
+			out += "-"
+		for i in range(length-ticks):
+			out += " "
+		out += "]\t" + str(percent) + "%"
+		return out
+
+	'''
 	downloads a file from the internet via its URL
 	'''
 	def download(self, url):
+		packetSize = 1024
+		downloaded = 0
+		
 		dl_fileName = url.split('/')[-1]
 		webFile = urllib.urlopen(url)
 		localFile = open(self.mainDirectory + os.sep + dl_fileName, "w")
-		localFile.write(webFile.read())
+		
+		totalSize = int(webFile.info().getheaders("Content-Length")[0])
+		
+		while downloaded < totalSize:
+			percent = int(downloaded/float(totalSize)*100)+1
+			localFile.write(webFile.read(packetSize))
+			downloaded += packetSize
+			sys.stdout.write("\r{0}".format(self.getProgressString(percent)))
+			sys.stdout.flush()
+		sys.stdout.write("\n")
+		
 		webFile.close()
 		localFile.close()
 
