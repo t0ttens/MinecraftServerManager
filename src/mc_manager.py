@@ -9,7 +9,7 @@ import sys
 import urllib
 import types
 
-serverURL = "https://s3.amazonaws.com/Minecraft.Download/versions/1.6.2/minecraft_server.1.6.2.jar"
+
 
 class MinecraftServerManager:
 
@@ -19,6 +19,9 @@ class MinecraftServerManager:
 		self.executablePath = ""
 		
 		self.servers = []
+		
+		self.currentServerVersion, self.serverURL = self.getVersion()
+		#self.serverURL = self.getDownloadUrl() #"https://s3.amazonaws.com/Minecraft.Download/versions/1.6.2/minecraft_server.1.6.2.jar"
 
 	'''
 	creates a string like '[------         ] 35%' which shows progress
@@ -33,6 +36,22 @@ class MinecraftServerManager:
 			out += " "
 		out += "]\t" + str(percent) + "%"
 		return out
+	
+	'''
+	check the latest server version on minecraft.net and its download url
+	'''
+	def getVersion(self):
+		lines = urllib.urlopen("https://minecraft.net/download").readlines()
+		version = 0
+		downloadUrl = ""
+		for i in range(len(lines)):
+			if lines[i].find("https://s3.amazonaws.com/Minecraft.Download/versions/") > 0:
+				leftBound = lines[i].find("versions/") + 9
+				rightBound = lines[i][leftBound:].find("/")
+				version = lines[i][leftBound:leftBound + rightBound]
+			if (lines[i].find(".jar") != -1) and (lines[i].find("minecraft_server") != -1):
+				downloadUrl = lines[i][lines[i].find("https://") : lines[i].find(".jar") + 4]
+		return version, downloadUrl
 
 	'''
 	downloads a file from the internet via its URL
@@ -110,18 +129,26 @@ class MinecraftServerManager:
 		serverFileExists = False
 		
 		# sorts entrys of your server directory by type
+		serverVersions = []
 		for entry in dirContent:
 			if not entry.startswith(".") and not entry.endswith(".jar") \
 											and not entry.endswith(".py"):
 				self.servers.append(entry)
 			if entry.endswith(".jar"):
+				if entry.startswith("minecraft_server"):
+					localVersion = str(entry)[str(entry).find(".") + 1 : str(entry).find("jar") - 1]
+					serverVersions.append(localVersion)
+		
+		for entry in serverVersions:
+			if entry == self.currentServerVersion:
 				serverFileExists = True
-				self.executablePath = self.mainDirectory + os.sep + entry
+				self.executablePath = self.mainDirectory + os.sep + "minecraft_server." + entry + ".jar"
+				break
 				
 		if not serverFileExists:
-			print "seems you have no server installed, let me do that for you..."
-			self.download(serverURL)
-			self.executablePath = self.mainDirectory + os.sep + serverURL.split("/")[-1]
+			print "seems you haven't installed the latest server version, let me do that for you..."
+			self.download(self.serverURL)
+			self.executablePath = self.mainDirectory + os.sep + self.serverURL.split("/")[-1]
 		
 		if len(self.servers) > 0:
 			print "Hello Miner! Which server should I start for you?"
