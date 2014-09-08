@@ -97,6 +97,10 @@ class MinecraftServerManager:
 			lines = eulaFile.readlines()
 			for i in range(len(lines)):
 				if lines[i].startswith("eula="):
+					if lines[i] == "eula=true":
+						# nothing to da
+						eulaFile.close()
+						return
 					lines[i] = "eula=true"
 			eulaFile.close()
 		else:
