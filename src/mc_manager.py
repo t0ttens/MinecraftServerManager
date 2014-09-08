@@ -112,10 +112,28 @@ class MinecraftServerManager:
 				self.chooseServer()
 
 	'''
+	agree EULA
+	'''
+	def eula(self):
+		# read file and change the agreement line
+		eulaFile = open("./eula.txt", "r")
+		lines = eulaFile.readlines()
+		for i in range(len(lines)):
+			if lines[i].startswith("eula="):
+				lines[i] = "eula=true"
+		eulaFile.close()
+		
+		# write into file
+		eulaFile = open("./eula.txt", "w")
+		eulaFile.writelines(lines)
+		eulaFile.close()
+
+	'''
 	starts the minecraft server in directory ~/MinecraftServer/[serverDirectory]
 	'''
 	def startServer(self):
 		os.chdir(self.serverDirectory)
+		self.eula()
 		os.system("java -Xmx1024M -Xms1024M -jar " + self.executablePath + " nogui")
 
 	def main(self):
