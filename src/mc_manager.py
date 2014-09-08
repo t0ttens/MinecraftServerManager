@@ -98,7 +98,7 @@ class MinecraftServerManager:
 			for i in range(len(lines)):
 				if lines[i].startswith("eula="):
 					if lines[i] == "eula=true":
-						# nothing to da
+						# nothing to do
 						eulaFile.close()
 						return
 					lines[i] = "eula=true"
@@ -145,6 +145,9 @@ class MinecraftServerManager:
 		self.eula()
 		os.system("java -Xmx1024M -Xms1024M -jar " + self.executablePath + " nogui")
 
+	'''
+	entry point
+	'''
 	def main(self):
 		# checks if directory "MinecraftServer" exists in your home directory
 		if not os.path.exists(self.mainDirectory):
