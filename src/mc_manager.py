@@ -86,6 +86,28 @@ class MinecraftServerManager:
 		os.mkdir(self.serverDirectory)
 
 	'''
+	agree EULA
+	'''
+	def eula(self):
+		# read eula file (if it exists) and change the agreement line
+		eulaPath = "./eula.txt"
+		lines = []
+		if os.path.exists(eulaPath):
+			eulaFile = open(eulaPath, "r")
+			lines = eulaFile.readlines()
+			for i in range(len(lines)):
+				if lines[i].startswith("eula="):
+					lines[i] = "eula=true"
+			eulaFile.close()
+		else:
+			lines.append("eula=true")
+		
+		# write into file
+		eulaFile = open(eulaPath, "w")
+		eulaFile.writelines(lines)
+		eulaFile.close()
+
+	'''
 	main dialog
 	'''  
 	def chooseServer(self):
@@ -110,23 +132,6 @@ class MinecraftServerManager:
 			else:
 				print "invalid input, try again"
 				self.chooseServer()
-
-	'''
-	agree EULA
-	'''
-	def eula(self):
-		# read file and change the agreement line
-		eulaFile = open("./eula.txt", "r")
-		lines = eulaFile.readlines()
-		for i in range(len(lines)):
-			if lines[i].startswith("eula="):
-				lines[i] = "eula=true"
-		eulaFile.close()
-		
-		# write into file
-		eulaFile = open("./eula.txt", "w")
-		eulaFile.writelines(lines)
-		eulaFile.close()
 
 	'''
 	starts the minecraft server in directory ~/MinecraftServer/[serverDirectory]
