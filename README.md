@@ -16,5 +16,6 @@ from a command prompt and the MinecraftServerManager will create a 'MinecraftSer
 ####Todo
 - exception handling
 - Windows compatibility
-- progress bar while downloading the jar-file from minecraft.net
-- check for latest jar-file on server automatically instead of hard coded downloading 1.6.2
+- automatic snapshots to restore the world if necessary
+- (done) progress bar while downloading the jar-file from minecraft.net
+- (done) check for latest jar-file on server automatically instead of hard coded downloading 1.6.2
