@@ -16,6 +16,7 @@ class MinecraftServerManager:
 	def __init__(self):
 		self.mainDirectory = os.path.expanduser("~") + os.sep + "MinecraftServer"
 		self.serverDirectory = ""
+		self.ramString = ""
 		self.executablePath = ""
 		
 		self.servers = []
@@ -110,6 +111,15 @@ class MinecraftServerManager:
 		eulaFile = open(eulaPath, "w")
 		eulaFile.writelines(lines)
 		eulaFile.close()
+		
+	'''
+	adapt RAM size for the small ARM processor
+	'''
+	def checkRaspberryPi(self):
+		if os.uname()[1] != "raspberrypi":
+			self.ramString = " -Xmx1024M -Xms1024M"
+			
+	
 
 	'''
 	main dialog
@@ -143,7 +153,10 @@ class MinecraftServerManager:
 	def startServer(self):
 		os.chdir(self.serverDirectory)
 		self.eula()
-		os.system("java -Xmx1024M -Xms1024M -jar " + self.executablePath + " nogui")
+		self.checkRaspberryPi()
+		command = "java" + self.ramString + " -jar " + self.executablePath + " nogui"
+		#print command #DEBUG
+		os.system(command)
 
 	'''
 	entry point
