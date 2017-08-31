@@ -22,7 +22,6 @@ class MinecraftServerManager:
 		self.servers = []
 		
 		self.currentServerVersion, self.serverURL = self.getVersion()
-		#self.serverURL = self.getDownloadUrl() #"https://s3.amazonaws.com/Minecraft.Download/versions/1.6.2/minecraft_server.1.6.2.jar"
 
 	'''
 	creates a string like '[------         ] 35%' which shows progress
@@ -42,7 +41,7 @@ class MinecraftServerManager:
 	check the latest server version on minecraft.net and its download url
 	'''
 	def getVersion(self):
-		lines = urllib.urlopen("https://minecraft.net/download").readlines()
+		lines = urllib.urlopen("https://minecraft.net/de-de/download/server").readlines()
 		version = 0
 		downloadUrl = ""
 		for i in range(len(lines)):
@@ -50,7 +49,7 @@ class MinecraftServerManager:
 				leftBound = lines[i].find("versions/") + 9
 				rightBound = lines[i][leftBound:].find("/")
 				version = lines[i][leftBound:leftBound + rightBound]
-			if (lines[i].find(".jar") != -1) and (lines[i].find("minecraft_server") != -1):
+			if (lines[i].find(".jar") != -1) and (lines[i].find("minecraft_server") != -1) and (lines[i].find("nogui") == -1):
 				downloadUrl = lines[i][lines[i].find("https://") : lines[i].find(".jar") + 4]
 		return version, downloadUrl
 
@@ -155,7 +154,6 @@ class MinecraftServerManager:
 		self.eula()
 		self.checkRaspberryPi()
 		command = "java" + self.ramString + " -jar " + self.executablePath + " nogui"
-		#print command #DEBUG
 		os.system(command)
 
 	'''
